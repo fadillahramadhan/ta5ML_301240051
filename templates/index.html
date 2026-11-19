@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prediksi Penumpang Titanic – Decision Tree</title>
+<style>
+  :root{--bg:#f4f6fb;--card:#fff;--text:#1d2433;--muted:#667085;--line:#d9deea;--pri:#2457d6;--ok:#127a4b;--bad:#b42318}
+  @media (prefers-color-scheme:dark){:root{--bg:#10141d;--card:#181e2b;--text:#e8ecf5;--muted:#9aa4b8;--line:#2a3347;--pri:#6f98ff;--ok:#4cd39a;--bad:#ff8a80}}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);padding:24px 16px}
+  .wrap{max-width:620px;margin:0 auto}
+  h1{font-size:1.4rem;margin:0 0 4px} p.sub{color:var(--muted);margin:0 0 20px;font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+  input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:1rem}
+  button{margin-top:18px;width:100%;padding:11px;border:0;border-radius:8px;background:var(--pri);color:#fff;font-size:1rem;font-weight:600;cursor:pointer}
+  .result{margin-top:18px;padding:16px;border-radius:10px;border:1px solid var(--line);text-align:center}
+  .result h2{margin:0 0 6px;font-size:1.5rem}.ok{color:var(--ok)}.bad{color:var(--bad)}
+  .err{margin-top:14px;color:var(--bad);font-size:.92rem}
+  .bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:10px}
+  .bar span{display:block;height:100%;background:var(--ok)}
+  footer{margin-top:16px;color:var(--muted);font-size:.8rem;text-align:center}
+  @media(max-width:480px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Prediksi Keselamatan Penumpang Titanic</h1>
+  <p class="sub">Model Decision Tree (max_depth={{ meta.max_depth }}) · akurasi uji {{ '%.1f'|format(meta.metrics.test_acc*100) }}%</p>
+  <div class="card">
+    <form method="post">
+      <div class="grid">
+        <div><label for="pclass">Kelas tiket</label>
+          <select id="pclass" name="pclass">
+            {% for k,t in [('1','1 (Atas)'),('2','2 (Menengah)'),('3','3 (Bawah)')] %}
+            <option value="{{k}}" {{ 'selected' if v.get('pclass','3')==k }}>{{t}}</option>{% endfor %}
+          </select></div>
+        <div><label for="sex">Jenis kelamin</label>
+          <select id="sex" name="sex">
+            <option value="male" {{ 'selected' if v.get('sex','male')=='male' }}>Laki-laki</option>
+            <option value="female" {{ 'selected' if v.get('sex')=='female' }}>Perempuan</option>
+          </select></div>
+        <div><label for="age">Usia (tahun, kosongkan jika tidak tahu)</label>
+          <input id="age" name="age" type="number" step="0.5" min="0" max="100" value="{{ v.get('age','') }}"></div>
+        <div><label for="fare">Harga tiket (fare)</label>
+          <input id="fare" name="fare" type="number" step="0.01" min="0" required value="{{ v.get('fare','15') }}"></div>
+        <div><label for="sibsp">Saudara/pasangan di kapal (sibsp)</label>
+          <input id="sibsp" name="sibsp" type="number" min="0" max="10" value="{{ v.get('sibsp','0') }}"></div>
+        <div><label for="parch">Orang tua/anak di kapal (parch)</label>
+          <input id="parch" name="parch" type="number" min="0" max="10" value="{{ v.get('parch','0') }}"></div>
+        <div style="grid-column:1/-1"><label for="embarked">Pelabuhan keberangkatan</label>
+          <select id="embarked" name="embarked">
+            {% for k,t in [('S','Southampton'),('C','Cherbourg'),('Q','Queenstown')] %}
+            <option value="{{k}}" {{ 'selected' if v.get('embarked','S')==k }}>{{t}}</option>{% endfor %}
+          </select></div>
+      </div>
+      <button type="submit">Prediksi</button>
+    </form>
+    {% if error %}<div class="err">{{ error }}</div>{% endif %}
+    {% if result %}
+    <div class="result">
+      <h2 class="{{ 'ok' if result.pred==1 else 'bad' }}">{{ result.label }}</h2>
+      <div>Peluang selamat: <b>{{ result.p_selamat }}%</b> · tidak selamat: <b>{{ result.p_tidak }}%</b></div>
+      <div class="bar"><span style="width:{{ result.p_selamat }}%"></span></div>
+    </div>
+    {% endif %}
+  </div>
+  <footer>TA-05 Pembelajaran Mesin · Decision Tree + Flask</footer>
+</div>
+</body>
+</html>

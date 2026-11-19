@@ -1,0 +1,21 @@
+{
+  "features": [
+    "pclass",
+    "age",
+    "sibsp",
+    "parch",
+    "fare",
+    "sex_female",
+    "sex_male",
+    "embarked_C",
+    "embarked_Q",
+    "embarked_S"
+  ],
+  "median_age": 28.0,
+  "mode_embarked": "S",
+  "metrics": {
+    "train_acc": 0.8298555377207063,
+    "test_acc": 0.7947761194029851
+  },
+  "max_depth": 3
+}
